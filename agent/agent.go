@@ -1,13 +1,14 @@
 package agent
 
 import (
+	"fmt"
 	"log"
+
 	"github.com/fsnotify/fsnotify"
-	//"github.com/hpcloud/tail"
-	//"fmt"
+	"github.com/hpcloud/tail"
 )
 
-func FsNotify(path string)  {
+func FsNotify(path string) {
 	watcher, err := fsnotify.NewWatcher()
 	if err != nil {
 		log.Fatal(err)
@@ -21,10 +22,16 @@ func FsNotify(path string)  {
 			case event := <-watcher.Events:
 				log.Println("event:", event)
 				if event.Op&fsnotify.Write == fsnotify.Write {
-					filePath := event.Name[0:len(event.Name)-12]
+					filePath := event.Name[0 : len(event.Name)-12]
 					log.Println("modified file:", filePath)
-
-
+					t, err := tail.TailFile(filePath, tail.Config{
+						Follow: true,
+						ReOpen: true,
+						Poll:   true,
+					})
+					for line := range t.Lines {
+						fmt.Println(line.Text)
+					}
 
 				}
 			case err := <-watcher.Errors:
