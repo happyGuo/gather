@@ -8,7 +8,12 @@ import (
 
 	"github.com/fsnotify/fsnotify"
 	//	"github.com/hpcloud/tail"
+	"runtime"
 )
+
+func init() {
+
+}
 
 func FsNotify(path string) {
 
@@ -25,12 +30,13 @@ func FsNotify(path string) {
 			case event := <-watcher.Events:
 				log.Println("event:", event)
 				if event.Op&fsnotify.Write == fsnotify.Write {
-					filePath := event.Name[0:len(event.Name)]
+					filePath := event.Name
+					if runtime.GOOS == "windows" {
+						filePath = event.Name[0 : len(event.Name)-12]
+					}
+
 					log.Println("modified file:", filePath)
-					var offset int64
-
-					offset = 0
-
+					var offset int64 = 0
 					if _, ok := fileOffset[filePath]; ok {
 						offset = fileOffset[filePath]
 
@@ -73,4 +79,8 @@ func readLine(fileName string, offset int64) int64 {
 	}
 	curOffset, _ := file.Seek(0, os.SEEK_CUR)
 	return curOffset
+}
+
+func sendToCollector(str string) {
+
 }

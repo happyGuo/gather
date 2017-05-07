@@ -5,8 +5,8 @@ import (
 	"os"
 	//"gather/collector"
 	//"gather/agent"
-	"log"
 	"gather/agent"
+	"log"
 )
 
 func main() {
@@ -16,7 +16,8 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	agent.FsNotify(launchPath)
+
 	fmt.Println("start...")
+	agent.FsNotify(launchPath)
 
 }
