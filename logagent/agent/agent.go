@@ -76,6 +76,7 @@ func readLine(fileName string, offset int64) int64 {
 			break // 读完或发生错误
 		}
 		fmt.Printf(str)
+		sendToCollector(str)
 	}
 	curOffset, _ := file.Seek(0, os.SEEK_CUR)
 	return curOffset
